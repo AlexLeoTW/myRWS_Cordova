@@ -31,6 +31,7 @@ var app = {
         this.http.send();
         this.http.addEventListener('readystatechange', function() {
             document.querySelector('.app').setAttribute('style', 'display:none');
+
         }, false);
     },
 
@@ -40,6 +41,17 @@ var app = {
 
     display: function (text) {
         // body...
+    },
+
+    switchPage: function (to) {
+        var pages = document.querySelectorAll('.page'),
+            x = 0;
+
+        for (x in pages) {
+            pages[x].setAttribute('style', 'display:none');
+        }
+
+        pages[to].setAttribute('style', 'display:block');
     }
 };
 
