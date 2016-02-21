@@ -1,5 +1,10 @@
+/*jslint browser: true, devel: true, forin: true, plusplus: true, vars: true, indent: 4*/
+/*global XmlHttpRequest */
+
+
+
 var rwsEnv = {
-    server: '192.168.1.2'
+    server: '192.168.1.11:3000'
 };
 
 var app = {
@@ -7,49 +12,77 @@ var app = {
     freewayList: null,
 
     // Application Constructor
-    initialize: function() {
+    initialize: function () {
+        'use strict';
+        console.log('initialize');
         this.bindEvents();
-        this.http = new XmlHttpRequest();
+        this.http = new XMLHttpRequest();
     },
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
+    bindEvents: function () {
+        'use strict';
+        console.log('binding...');
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
+    onDeviceReady: function () {
+        'use strict';
         app.freewayList = app.getFreewayList();
     },
 
-    getFreewayList: function() {
+    getFreewayList: function () {
+        'use strict';
         this.http.open('GET', rwsEnv.server, true);
         this.http.send();
-        this.http.addEventListener('readystatechange', function() {
+        this.http.onreadystatechange = function () {
             app.debug('updading freeway list...');
-            if (http.readyState == 4 && http.status == 200) {
-                app.freewayList = JSON.parse(http.responseText);
-            } else if (http.readyState == 4 && http.status == 404) {
+            if (app.http.readyState === 4 && app.http.status === 200) {
+                app.freewayList = JSON.parse(app.http.responseText);
+                document.getElementById('freewayList').appendChild(app.toHtmlSelect(
+                    app.freewayList,
+                    function (item) {
+                        return item.name;
+                    }, function (item) {
+                        return item.name;
+                    }
+                ));
+            } else if (app.http.readyState === 4 && app.http.status === 404) {
                 app.debug('ERROR, server not found');
             }
-
-        }, false);
+        };
     },
 
-    getFreewayInfo: function(id) {
+    toHtmlSelect: function (array, toValue, toName) {
+        var option,
+            select = document.createElement('SELECT');
+        for (var i = 0; i < array.length; i++) {
+            option = document.createElement('OPTION');
+            option.appendChild(document.createTextNode(toName(array[i])));
+            option.value = toValue(array[i]);
+            select.appendChild(option);
+        }
+        return select;
+    },
+
+    getFreewayInfo: function (id) {
+        'use strict';
         // W.I.P.
     },
 
     debug: function (text) {
+        'use strict';
         document.getElementById('debug').innerHTML = text;
         console.log(text);
     },
 
     switchPage: function (to) {
+        'use strict';
         var pages = document.querySelectorAll('.page'),
             x = 0;
 
@@ -58,13 +91,21 @@ var app = {
         }
         pages[to].setAttribute('style', 'display:block');
         switch (to) {
-            case 1:
-                // do-noting
-                break;
-            case 2:
-                document.getElementById('freewayList');
-                // W.I.P.
-                break;
+        case 1:
+            // do-noting
+            break;
+        case 2:
+            var list = document.getElementById('freewayList'),
+                item = null;
+
+            for (item in this.freewayList) {
+                var node = document.createElement('option'),
+                    text = document.createTextNode('item.name');
+                node.getAttributeNode("value").value = item.id;
+                node.appendChild(text);
+                list.appendChild(node);
+            }
+            break;
         }
     }
 };
