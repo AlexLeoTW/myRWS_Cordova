@@ -4,7 +4,7 @@
 
 
 var rwsEnv = {
-    server: '192.168.1.11:3000'
+    server: '192.168.1.24:3000'
 };
 
 var app = {
@@ -43,17 +43,19 @@ var app = {
         this.http.onreadystatechange = function () {
             app.debug('updading freeway list...');
             if (app.http.readyState === 4 && app.http.status === 200) {
-                app.freewayList = JSON.parse(app.http.responseText);
+                freewayList = JSON.parse(app.http.responseText);
                 document.getElementById('freewayList').appendChild(app.toHtmlSelect(
-                    app.freewayList,
+                    freewayList,
                     function (item) {
                         return item.name;
                     }, function (item) {
                         return item.name;
                     }
                 ));
+                return freewayList;
             } else if (app.http.readyState === 4 && app.http.status === 404) {
                 app.debug('ERROR, server not found');
+                return null;
             }
         };
     },
