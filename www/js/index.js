@@ -4,7 +4,7 @@
 
 
 var rwsEnv = {
-    server: '192.168.1.24:3000'
+    server: '192.168.1.24:3000/v1'
 };
 
 var app = {
@@ -38,7 +38,7 @@ var app = {
 
     getFreewayList: function () {
         'use strict';
-        this.http.open('GET', rwsEnv.server, true);
+        this.http.open('GET', rwsEnv.server + '/freeway', true);
         this.http.send();
         this.http.onreadystatechange = function () {
             app.debug('updading freeway list...');
@@ -76,7 +76,7 @@ var app = {
         'use strict';
         var freewayId = document.querySelector('.freewayList select').selectedIndex;
         var infoView = document.querySelectorAll('freewayInfo p');
-        this.http.open('GET', rwsEnv.server + '?id=' + freewayId, true);
+        this.http.open('GET', rwsEnv.server + '/freeway?id=' + freewayId, true);
         this.http.send();
         if (app.http.readyState === 4 && app.http.status === 200) {
             freewayInfo = JSON.parse(app.http.responseText);
