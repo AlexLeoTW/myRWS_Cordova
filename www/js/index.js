@@ -47,7 +47,7 @@ var app = {
                 document.getElementById('freewayList').appendChild(app.toHtmlSelect(
                     freewayList,
                     function (item) {
-                        return item.name;
+                        return item.id;
                     }, function (item) {
                         return item.name;
                     }
@@ -72,9 +72,22 @@ var app = {
         return select;
     },
 
-    getFreewayInfo: function (id) {
+    getFreewayInfo: function () {
         'use strict';
-        // W.I.P.
+        var freewayId = document.querySelector('.freewayList select').selectedIndex;
+        var infoView = document.querySelectorAll('freewayInfo p');
+        this.http.open('GET', rwsEnv.server + '?id=' + freewayId, true);
+        this.http.send();
+        if (app.http.readyState === 4 && app.http.status === 200) {
+            freewayInfo = JSON.parse(app.http.responseText);
+            app.debug(freewayInfo);
+            infoView[0].innerHTML = freewayInfo.id;
+            infoView[1].innerHTML = freewayInfo.name;
+            infoView[2].innerHTML = freewayInfo.nick;
+        } else if (app.http.readyState === 4 && app.http.status === 404) {
+            app.debug('ERROR, server not found');
+            return null;
+        }
     },
 
     debug: function (text) {
